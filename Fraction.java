@@ -1,6 +1,6 @@
 /**
  * A class representing fractions.
- * Author: YOUR NAME here
+ * @Author: Grigory Shatalin
  */
 public class Fraction {
     private int numerator;
