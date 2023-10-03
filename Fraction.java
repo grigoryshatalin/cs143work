@@ -28,14 +28,16 @@ public class Fraction {
             throw new IllegalArgumentException("Denominator cannot be zero.");
         }
         if (num < 0 && den < 0) {
-            numerator = num;
-            denominator = den;
+            numerator = -num;
+            denominator = -den;
             simplify();
-        } else if (num < 0 || den < 0) {
-            numerator = 0 - num;
-            denominator = den;
+        }
+        else if(den<0){
+            numerator=-num;
+            denominator=-den;
             simplify();
-        } else {
+        }
+        else{
             numerator = num;
             denominator = den;
             simplify();
@@ -59,7 +61,7 @@ public class Fraction {
             throw new IllegalArgumentException("Numerator and denominator must be non-negative.");
         }
         if (val < 0) {
-            numerator = 0 - (num + (val * den));
+            numerator = 0 - (num + (Math.abs(val) * den));
             denominator = den;
             simplify();
         } else {
@@ -70,14 +72,24 @@ public class Fraction {
     }
 
     /**
+     * Copy Constructor
+     * @param a The fraction we're copying
+     */
+    public Fraction(Fraction a){
+        numerator = a.numerator;
+        denominator = a.denominator;
+    }
+
+    /**
      * Simplifies the fraction by finding and dividing by the greatest common
      * divisor (GCD).
      */
     public void simplify() {
-        int gcd = gcd(numerator, denominator);
+        int gcd = gcd(Math.abs(numerator), Math.abs(denominator));
         numerator = numerator / gcd;
         denominator = denominator / gcd;
     }
+    
 
     /**
      * Calculates the greatest common divisor (GCD) of two integers.
@@ -138,14 +150,16 @@ public class Fraction {
             throw new IllegalArgumentException("Denominator cannot be zero.");
         }
         if (n < 0 && d < 0) {
-            numerator = n;
-            denominator = d;
+            numerator = -n;
+            denominator = -d;
             simplify();
-        } else if (n < 0 || d < 0) {
-            numerator = 0 - n;
-            denominator = d;
+        }
+        else if(d<0){
+            numerator=-n;
+            denominator=-d;
             simplify();
-        } else {
+        }
+        else{
             numerator = n;
             denominator = d;
             simplify();
@@ -157,50 +171,52 @@ public class Fraction {
      * 
      * @param a The Fraction to be added.
      */
-    public void add(Fraction a) {
+    public Fraction add(Fraction a) {
         int newD = lcm(denominator, a.getDenom());
+        int newN;
+    
         if (denominator == newD) {
-            denominator = newD;
-            numerator += (newD / a.getDenom()) * a.getNum();
-            simplify();
+            newN = numerator + (newD / a.getDenom()) * a.getNum();
         } else if (a.getDenom() == newD) {
-            numerator = (newD / denominator) * numerator;
-            denominator = newD;
-            numerator += a.getNum();
-
+            newN = (newD / denominator) * numerator + a.getNum();
         } else {
-            numerator = (newD / denominator) * numerator;
-            denominator = newD;
-            numerator += (newD / a.getDenom()) * a.getNum();
-            simplify();
+            newN = (newD / denominator) * numerator + (newD / a.getDenom()) * a.getNum();
         }
+    
+        Fraction result = new Fraction(newN, newD);
+        result.simplify(); // Assuming you have a simplify method in your Fraction class
+        return result;
     }
+    
 
     /**
      * Subtracts the given Fraction 'a' from this Fraction.
      * 
      * @param a The Fraction to be subtracted.
      */
-    public void subtract(Fraction a) {
+    public Fraction subtract(Fraction a) {
         int newD = lcm(denominator, a.getDenom());
         int factor1 = newD / denominator;
         int factor2 = newD / a.getDenom();
-
-        numerator = numerator * factor1 - a.getNum() * factor2;
-        denominator = newD;
-
-        simplify();
+    
+        int newN = numerator * factor1 - a.getNum() * factor2;
+    
+        Fraction result = new Fraction(newN, newD);
+        result.simplify(); // Assuming you have a simplify method in your Fraction class
+        return result;
     }
+    
 
     /**
      * Multiplies this Fraction by the given Fraction 'a'.
      * 
      * @param a The Fraction to be multiplied with.
      */
-    public void multiply(Fraction a) {
-        numerator = numerator * a.getNum();
-        denominator = denominator * a.getDenom();
-        simplify();
+    public Fraction multiply(Fraction a) {
+        int numerator = this.numerator * a.getNum();
+        int denominator = this.denominator * a.getDenom();
+        Fraction result = new Fraction(numerator, denominator);
+        return result;
     }
 
     /**
@@ -209,13 +225,14 @@ public class Fraction {
      * @param a The Fraction to be divided by.
      * @throws IllegalArgumentException if 'a' is a zero Fraction.
      */
-    public void divide(Fraction a) {
+    public Fraction divide(Fraction a) {
         // Check for division by zero
         if (a.getNum() != 0) {
-            numerator = numerator * a.getDenom();
-            denominator = denominator * a.getNum();
+            int numerator = this.numerator * a.getDenom();
+            int denominator = this.denominator * a.getNum();
 
-            simplify();
+            Fraction result = new Fraction(numerator, denominator);
+            return result;
         } else {
             // Handle division by zero error
             throw new IllegalArgumentException("can't divide by 0");
@@ -228,9 +245,25 @@ public class Fraction {
      * @return A String representation of this Fraction.
      */
     public String toString() {
-        return numerator + "/" + denominator;
+        if(Math.abs(numerator)>denominator){
+            int val = numerator/denominator;
+            int num = numerator%denominator;
+            return numerator + "/" + denominator + " or "+val+" and "+ num + "/"+denominator;
+        }
+        else if(numerator==0){
+            return numerator + "/" + denominator + " or "+0;
+        }
+        else{
+            return numerator + "/" + denominator;
+        }
     }
 
+    /**
+     * Checks if this Fraction is less than another Fraction 'a'.
+     * 
+     * @param a The Fraction to compare to.
+     * @return true if this Fraction is less than 'a', false otherwise.
+     */
     public boolean less(Fraction a) {
         int lcm = lcm(denominator, a.getDenom());
         if ((numerator * (lcm / denominator)) < a.getNum() * (lcm / a.getDenom())) {
@@ -239,9 +272,29 @@ public class Fraction {
         return false;
     }
 
+    /**
+     * Checks if this Fraction is greater than another Fraction 'a'.
+     * 
+     * @param a The Fraction to compare to.
+     * @return true if this Fraction is greater than 'a', false otherwise.
+     */
     public boolean more(Fraction a) {
         int lcm = lcm(denominator, a.getDenom());
         if ((numerator * (lcm / denominator)) > a.getNum() * (lcm / a.getDenom())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this Fraction is equal to another Fraction 'a'.
+     * 
+     * @param a The Fraction to compare to.
+     * @return true if this Fraction is equal to 'a', false otherwise.
+     */
+    public boolean equals(Fraction a){
+        int lcm = lcm(denominator, a.getDenom());
+        if ((numerator * (lcm / denominator)) == a.getNum() * (lcm / a.getDenom())) {
             return true;
         }
         return false;
