@@ -8,9 +8,8 @@ public class run{
 		c11.setColor(tmp);
         System.out.println(c4.toString());
         System.out.println(c11.toString());
-
-
     }
+
     public static boolean equalArrays(int[] one, int[] two) {
 		if (one.length != two.length)
 			return false;

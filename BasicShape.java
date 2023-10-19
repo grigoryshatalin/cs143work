@@ -36,9 +36,7 @@ public abstract class BasicShape extends HasState implements Relatable {
         if (colors[0] < 0 || colors[0] > 255 || colors[1] < 0 || colors[1] > 255 || colors[2] < 0 || colors[2] > 255) {
             throw new IllegalArgumentException("RGB values must be in the range [0, 255]");
         }
-        color[0] = colors[0];
-        color[1] = colors[1];
-        color[2] = colors[2];
+        color = colors;
     }
 
     // Abstract method to get the area
